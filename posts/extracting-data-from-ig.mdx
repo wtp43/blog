@@ -1,0 +1,102 @@
+---
+title: Extracting data from Instagram
+description: A quick dive into data extraction without web scraping
+slug: extracting-data-from-ig
+date: Dec 22, 2024
+---
+
+
+A couple of months ago, I had a conversation with a friend who was interested in whether fashion trends could be predicted. There weren’t many public datasets on clothing items making it hard to do any trend analysis. The engineering needed for this piqued my interest and this series of blog posts, I’ll be discussing how I build the infrastructure. 
+
+
+The first place I thought of to extract data was from Instagram which is a great source of images.
+
+
+
+# Getting the data
+
+## Web Scraping Not Needed
+
+Web scraping using tools such as BeautifulSoup is quite tedious and prone to failure since they rely on HTML structure. As long as the content of the webpage is not dynamically generated through user interactions (e.g. clicking buttons, sometimes scrolling), we can make use of public API endpoints.
+
+Opening up developer tools in a browser, click the network panel and then XHR (XMLHttpRequest) to filter for only AJAX requests (asynchronous HTTP requests). In this tab, you’ll be able to see all API requests and their corresponding data.
+
+<Callout title={"Example"}>A request being made to Instagram’s backend for information about the current profile.</Callout>
+
+
+<img src="/blog/edfi-1.png" alt="Description" style={{ width: '1000px' }} />
+
+
+### Replicating the API calls
+
+Once the endpoint is determined for the data of interest, the next step is to find out which headers are required to be sent to the API so a request can be made without a browser.
+
+Using Postman: https://www.postman.com/, we can quickly determine which headers are necessary until the API returns a valid response.
+
+With the correct request and headers, it’s now possible to automate this through code.
+
+### Bypassing API rate limiting 
+> For research purposes…
+
+When things start to scale up, you’ll possibly encounter a backend imposing limits and even blocking your program from making API requests.
+
+Specifically for Instagram, they will block public IP addresses that are making too many requests.
+The amount of requests you can make from 1 public IP address also depends on the trust factor of said IP.
+I’ve experimented with both varying/randomizing the time between requests and changing browser fingerprints through different request headers.
+
+The only solution that worked was through masking the public IP address from which the request was made. The endpoints will block based on how many requests are made in some unknown time period.
+
+
+#### Proxies
+TLDR: Unlimited bandwidth datacenter proxies with high thread counts are the best value. IPv6 data center proxies are even cheaper if the api supports IPv6.
+
+I’ve found https://www.ipqualityscore.com/ to be quite helpful in determining ip trust factors.
+The three types of IPs listed in the order from highest to lowest trust factor: mobile, residential, and datacenter. 
+
+Generally, residential ip proxy providers charge by bandwidth used (generally \$5-10/GB) which can rack up costs quite quickly. You can buy private IPs so that they aren’t shared with others. These IPs are very useful if you require bot automation on social media platforms.
+
+With mobile proxies, many providers offer unlimited bandwidth (limited by bandwidth speed, most are slow 4G speeds capped \<50mb/s), and how often an ip can be replaced (commonly every 5/10 minutes). As ISPs have a limited amount of IPs, mobile IPs are assigned using Carrier-Grade NAT. In other words, multiple customers can have the same IP. From my testing with various providers (AT&T, Telus, Bell, Rogers), the IP you’ll be assigned will most likely be from a /24 subnet (giving you a possible 255 IP 
+addresses) based on the cell tower you’re connected to. 
+
+For the purposes of bypassing API rate limiting, datacenter proxies are most suitable.
+Many providers provide unlimited bandwidth with plans differing on the amount of concurrent requests able to be made per second. They’re also cheaper for the reason that datacenter IP’s are well known and may be permanently blocked by the backend you’re trying to access. These IP’s will be shared from a massive pool, and you should do your own due diligence on whether the number of IP’s in the pool is as advertised.
+IPv6 data center proxies are cheaper than IPv4 as not all sites support the protocol yet. Since the range of IP’s is much larger, most rate limiting mechanisms will block an entire /64 subnet. So even though there are $2^{64}$ \= 18,446,744,073,709,551,616 IP’s in a /64 subnet, they will all be blocked.
+What you’ll be interested in when determining the IPv6 pool is how many IP’s are from different /64 subnets.
+
+
+Many providers do however provide trials. Blackhatworld has a forum for proxy sellers/buyers if you are interested. You can also check reviews of the provider on TrustPilot if available.
+
+
+#### Setting up your own mobile proxy
+Finding the right proxy was extremely time consuming. If you wanted to build your own mobile proxy, you can use either https://github.com/squid-cache/squid or https://github.com/3proxy/3proxy run on linux, with a 4G/5G dongle. It was quite easy to set up one but there were too many limiting factors to consider it for further use:
+Unlimited mobile plans are quite costly
+Rotating IP’s is time costly. The fastest way to get assigned a new IP is to change mobile bands which takes at least 5 seconds.
+4G speeds are unreliable depending on your location and connection to a cell tower
+5G speeds are fast but 5G hardware is still relatively new and quite expensive. It would cost around \$250 for Quectal 5G modem module compared to \$40 for a Huawei LTE usb dongle
+You have access to only 255 IP’s (which aren’t assigned sequentially) in 1 location
+
+To truly scale up, you would need multiple proxy servers and mobile plans in different locations.
+
+
+
+### Searching for endpoints on mobile devices
+
+Depending on the device and browser fingerprint, different API requests can be made.
+As mobile browsers don’t provide you access to developer tools, we’ll need the help of an HTTP proxy https://www.charlesproxy.com/. By routing all traffic on your mobile device through this HTTP proxy, we monitor all the network requests being made by it. 
+
+It’s also important to check the contents of each and every request for hidden code.
+I noticed this when I switched from Firefox to Brave on iOS, and my browser omitted the request that I usually saw for populating the profile data. The data is not cached so it could be a script injecting the data.
+While looking for where it was being injected to find clues about other available endpoints, I saw a request for what was seemingly an Instagram Icon. Hidden in the HTML code of this request was many other public endpoints that I was able to use for extracting data.
+
+
+<Callout title={"A quick note on the legality of web scraping"}> Without going into too many details about whether web scraping, generally it is legal to scrape data is available publicly. The data must be available without an account and having to log in.
+Much of this is still a grey area as court cases related to web scraping have had different conclusions in differing US federal judicial circuits. <br/> https://techcrunch.com/2024/02/26/meta-drops-lawsuit-against-web-scraping-firm-bright-data-that-sold-millions-of-instagram-records/?guccounter=1 
+https://www.reuters.com/legal/transactional/manhattan-judge-rejects-server-test-internet-copyright-infringement-2021-07-30/ </Callout>
+
+
+
+### If you really need to scrape
+In the case that you do need to scrape, Crawlee is a great browser automation library. 
+There’s also https://github.com/ScrapeGraphAI/Scrapegraph-ai which uses LLM and direct graph logic to create scraping pipelines that I’m hoping to try in the future. 
+
+
