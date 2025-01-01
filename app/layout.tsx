@@ -31,7 +31,7 @@ export default function RootLayout({
 }
 
 export const metadata = {
-  metadataBase: new URL('https://blog.com'),
+  metadataBase: new URL('https://wtp43-blog.vercel.app'),
   title: {
     template: '%s | William Tang',
     default: 'William Tang',
