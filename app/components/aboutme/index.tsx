@@ -18,7 +18,7 @@ export default function AboutMe() {
         <h1 className="text-5xl font-bold tracking-tight">William Tang</h1>
       </div>
       <p className="text-lg leading-relaxed">
-        Software Engineer and part-time pianist.
+        Software engineer and aspiring pianist.
       </p>
       <div className="flex space-x-3">
         <Button asChild variant="outline" size="icon">
