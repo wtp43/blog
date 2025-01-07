@@ -45,9 +45,9 @@ export const metadata = {
     type: 'website',
     images: [
       {
-        url: `https://wtp43-blog.vercel.app/opengraph-image`,
-        width: 1200,
-        height: 630,
+        url: `https://wtp43-blog.vercel.app/home.png`,
+        width: 1919,
+        height: 992,
         alt: "William Tang's site",
       },
     ],
