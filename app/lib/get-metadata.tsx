@@ -49,7 +49,7 @@ export function getMetadata({
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <meta httpEquiv="Content-Language" content="en" />
       <meta property="og:site_name" content="William Tang's site" />
-      <meta name="apple-mobile-web-app-title" content="Max" />
+      <meta name="apple-mobile-web-app-title" content="WT" />
       <meta name="author" content={author} />
       <meta property="og:type" content="website" />
       <meta charSet="utf-8" />

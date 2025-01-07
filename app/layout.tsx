@@ -39,8 +39,8 @@ export const metadata = {
   description: 'A website by William Tang.',
   openGraph: {
     title: 'William Tang',
-    url: '',
-    siteName: 'William Tang Blog',
+    url: 'https://wtp43-blog.vercel.app',
+    siteName: "William Tang's site",
     locale: 'en_US',
     type: 'website',
     images: [
@@ -60,9 +60,9 @@ export const metadata = {
       follow: true,
     },
   },
-  // icons: {
-  //   shortcut: '',
-  // },
+  icons: {
+    shortcut: 'https://wtp43-blog.vercel.app/favicons/favicon.ico',
+  },
 }
 
 export const viewport: Viewport = {
