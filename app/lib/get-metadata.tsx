@@ -40,8 +40,10 @@ export function getMetadata({
       <meta name="og:description" content={description} />
 
       {/* Image */}
-      <meta name="og:image" content={`${domain}${image}`} />
-
+      <meta
+        name="og:image"
+        content={'https://wtp43-blog.vercel.app/home.png'}
+      />
       {/* URL */}
       <meta name="og:url" content={`${domain}${path}`} />
 
