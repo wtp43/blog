@@ -4,9 +4,8 @@ import AboutMe from '@components/aboutme'
 import { getProjects } from '@lib/projects'
 import TimeOfDay from '../timer'
 import { ContentListRSC } from '@components/content-list'
-import Callout from '@components/callout'
 
-const PROJECT_COUNT = 3
+const PROJECT_COUNT = 2
 
 export default async function HomePage() {
   const projects = await getProjects()

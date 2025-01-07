@@ -1,4 +1,3 @@
-import Outline from '@components/layout-outline'
 import '../../styles/markdown.css'
 
 export const metadata = {

@@ -7,7 +7,8 @@ import { cache } from 'react'
 const thirdPartyPosts: Post[] = []
 
 export const getPosts = cache(async (includeThirdPartyPosts?: boolean) => {
-  const posts = await fs.readdir('./posts/')
+  const postsDir = path.join(process.cwd(), 'posts')
+  const posts = await fs.readdir(postsDir)
 
   const postsWithMetadata = await Promise.all(
     posts
@@ -15,7 +16,7 @@ export const getPosts = cache(async (includeThirdPartyPosts?: boolean) => {
         (file) => path.extname(file) === '.md' || path.extname(file) === '.mdx',
       )
       .map(async (file) => {
-        const filePath = `./posts/${file}`
+        const filePath = process.cwd() + `/posts/${file}`
         const postContent = await fs.readFile(filePath, 'utf8')
         const { data, content } = matter(postContent)
 

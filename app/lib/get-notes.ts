@@ -1,9 +1,10 @@
 import { cache } from 'react'
 import { readFiles } from './read-files'
 import { Note } from './types'
+import path from 'path'
 
 export const getNotes = cache(async () => {
-  const notesWithMetadata = readFiles<Note>('./notes/')
+  const notesWithMetadata = readFiles<Note>(path.join(process.cwd(), 'notes'))
 
   const filtered = notesWithMetadata
     .filter((post) => post !== null)
