@@ -21,6 +21,17 @@ export const generateMetadata = async (props: {
   return {
     title: note?.title,
     description: note?.description,
+    openGraph: {
+      url: `https://wtp43-blog.vercel.app/blog/${params.slug}`,
+      images: [
+        {
+          url: `https://wtp43-blog.vercel.app/home.png`,
+          width: 1919,
+          height: 992,
+          alt: "William Tang's site",
+        },
+      ],
+    },
     alternates: {
       canonical: `https://wtp43-blog.vercel.app/notes/${params.slug}`,
     },

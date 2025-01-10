@@ -39,7 +39,6 @@ export const metadata = {
   description: 'A website by William Tang.',
   openGraph: {
     title: 'William Tang',
-    url: 'https://wtp43-blog.vercel.app',
     siteName: "William Tang's site",
     locale: 'en_US',
     type: 'website',
