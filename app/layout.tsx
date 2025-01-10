@@ -34,7 +34,7 @@ export const metadata = {
   metadataBase: new URL('https://wtp43-blog.vercel.app'),
   title: {
     template: '%s | William Tang',
-    default: 'William Tang',
+    default: 'Blog',
   },
   description: 'A website by William Tang.',
   openGraph: {

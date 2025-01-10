@@ -1,7 +1,7 @@
 ---
 title: Extracting data from Instagram
 description: A quick dive into data extraction without web scraping
-slug: extracting-data-from-ig
+slug: extracting-data-from-instagram
 date: Dec 22, 2024
 ---
 
@@ -25,6 +25,105 @@ Opening up developer tools in a browser, click the network panel and then XHR (X
 
 
 <img src="/blog/edfi-1.png" alt="Description" style={{ width: '1000px' }} />
+
+Here's a simple python program that makes a request to the API using aiohttp and then parses the json with jmespath to filter for a subset of fields.
+
+
+```python
+import asyncio
+
+import aiohttp
+import jmespath
+
+
+async def request(url, headers):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(
+            url=url,
+            headers=headers,
+        ) as response:
+            response.raise_for_status()
+            content = await response.json()
+            return content
+
+
+def main():
+    url = "https://www.instagram.com/api/v1/users/web_profile_info/?username=google"
+    headers = {
+        "Accept": "*/*",
+        "Accept-Encoding": "gzip, deflate, br",
+        "User-Agent": "Instagram 273.0.0.16.70 (iPad13,8; iOS 16_3; en_US; en-US; scale=2.00; 2048x2732; 452417278) AppleWebKit/420+",
+    }
+    content = asyncio.run(request(url, headers))
+    result = jmespath.search(
+        """{
+            user_id: id,
+            username: username,
+            name: full_name,
+            category: category_name,
+            category_enum: category_enum,
+            overall_category_name: overall_category_name,
+            business_category_name: business_category_name,
+            biography: biography,
+            followers: edge_followed_by.count,
+            fbid: fbid,
+            is_private: is_private,
+            is_verified: is_verified,
+            is_professional_account: is_professional_account,
+            is_business_account: is_business_account,
+            is_joined_recently: is_joined_recently,
+            image_count: edge_owner_to_timeline_media.count,
+            pronouns: pronouns,
+            related_profiles: edge_related_profiles.edges[].node.{
+                user_id: id,
+                full_name: full_name,
+                username: username,
+                is_private: is_private,
+                is_verified: is_verified
+            }
+        }""",
+        content["data"]["user"],
+    )
+
+# Sample Output
+{
+   "user_id":"1067259270",
+   "username":"google",
+   "name":"Google",
+   "category":"Internet company",
+   "category_enum":"INTERNET_COMPANY",
+   "overall_category_name":"None",
+   "business_category_name":"None",
+   "biography":"Google unfiltered—sometimes with filters.",
+   "followers":15344365,
+   "fbid":"17841401778116675",
+   "is_private":false,
+   "is_verified":true,
+   "is_professional_account":true,
+   "is_business_account":true,
+   "is_joined_recently":false,
+   "image_count":2656,
+   "pronouns":[],
+   "related_profiles":[
+      {
+         "user_id":"4135497235",
+         "full_name":"Android",
+         "username":"android",
+         "is_private":false,
+         "is_verified":true
+      },
+      {
+         "user_id":"11421759503",
+         "full_name":"Google for Developers",
+         "username":"googlefordevs",
+         "is_private":false,
+         "is_verified":true
+      },
+      ...
+   ]
+}
+
+```
 
 
 ### Replicating the API calls
